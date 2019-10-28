@@ -41,6 +41,11 @@ private:
 
     void initWidth(int width, int height);
 
+    bool openVideoDecoder(const AVCodecID &codec_id); //打开视频解码器
+    bool openHardDecoder_Cuvid(const AVCodecID &codec_id); //打开硬件解码器（英伟达）
+    bool openHardDecoder_Qsv(const AVCodecID &codec_id);   //打开硬件解码器（intel）
+    bool openSoftDecoder(const AVCodecID &codec_id); //打开软解码器
+
 };
 
 #endif // H264DECORDER_H

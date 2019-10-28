@@ -19,6 +19,8 @@ VideoDecoder::VideoDecoder()
 
 void VideoDecoder::initWidth(int width, int height)
 {
+    fprintf(stderr, "%s pCodecCtx->pix_fmt=%d %d %d \n", __FUNCTION__, pCodecCtx->pix_fmt, width, height);
+
     int numBytes = avpicture_get_size(AV_PIX_FMT_YUV420P, width,height);
     bufferYUV = (uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
     avpicture_fill((AVPicture *)pFrameYUV, bufferYUV, AV_PIX_FMT_YUV420P,width, height);
@@ -28,6 +30,8 @@ void VideoDecoder::initWidth(int width, int height)
                                      SWS_BICUBIC, NULL,NULL,NULL);
 
 }
+
+#if 0
 
 bool VideoDecoder::openDecoder(AVCodecID id)
 {
@@ -59,6 +63,237 @@ bool VideoDecoder::openDecoder(AVCodecID id)
         return false;
 
     return true;
+}
+
+#else
+
+bool VideoDecoder::openDecoder(AVCodecID id)
+{
+    bool isSucceed = openVideoDecoder(id);
+
+    if (isSucceed)
+    {
+        // Allocate video frame
+        pFrame = av_frame_alloc();
+        pFrameYUV = av_frame_alloc();
+
+        if(pFrameYUV == NULL || pFrame == NULL)
+        {
+            isSucceed = false;
+        }
+    }
+
+    return isSucceed;
+}
+
+#endif
+
+///打开视频解码器
+bool VideoDecoder::openVideoDecoder(const AVCodecID &codec_id)
+{
+    bool isSucceed = false;
+    bool isHardWareDecoderOpened = false;
+
+//    bool mIsSupportHardDecoder = true;
+//    if (mIsSupportHardDecoder)
+    {
+        ///尝试打开cuvid解码器
+        isHardWareDecoderOpened = openHardDecoder_Cuvid(codec_id);
+
+        ///cuvid打开失败了 继续尝试 qsv
+        if (!isHardWareDecoderOpened)
+        {
+            ///打开intel的硬解有问题，暂时还没搞明白，先不用。
+//            isHardWareDecoderOpened = openHardDecoder_Qsv(codec_id);
+        }
+    }
+
+    //尝试打开硬件解码器失败了 改用软解码
+    if (!isHardWareDecoderOpened)
+    {
+        isSucceed = openSoftDecoder(codec_id);
+    }
+    else
+    {
+        isSucceed = true;
+    }
+
+//    if (isSucceed)
+//    {
+//        if (pCodecCtx->pix_fmt == AV_PIX_FMT_NONE)
+//        {
+//            isSucceed = false;
+//        }
+//    }
+
+    return isSucceed;
+}
+
+///打开硬件解码器（英伟达）
+bool VideoDecoder::openHardDecoder_Cuvid(const AVCodecID &codec_id)
+{
+    bool isSucceed = false;
+
+    fprintf(stderr,"open hardware decoder cuvid...\n");
+
+    ///查找硬件解码器
+    char hardWareDecoderName[32] = {0};
+
+    if (AV_CODEC_ID_H264 == codec_id)
+    {
+        sprintf(hardWareDecoderName, "h264_cuvid");
+    }
+    else if (AV_CODEC_ID_HEVC == codec_id)
+    {
+        sprintf(hardWareDecoderName, "hevc_cuvid");
+    }
+    else if (AV_CODEC_ID_MPEG1VIDEO == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg1_cuvid");
+    }
+    else if (AV_CODEC_ID_MPEG2VIDEO == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg2_cuvid");
+    }
+    else if (AV_CODEC_ID_MPEG4 == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg4_cuvid");
+    }
+
+    if (strlen(hardWareDecoderName) > 0)
+    {
+        pCodec = avcodec_find_decoder_by_name(hardWareDecoderName);
+
+        if (pCodec != NULL)
+        {
+            pCodecCtx = avcodec_alloc_context3(pCodec);
+
+            ///打开解码器
+            if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+            {
+                avcodec_close(pCodecCtx);
+                avcodec_free_context(&pCodecCtx);
+                pCodecCtx = nullptr;
+                isSucceed = false;
+
+                fprintf(stderr,"Could not open codec %s\n",hardWareDecoderName);
+            }
+            else
+            {
+                isSucceed = true;
+                fprintf(stderr,"open codec %s succeed! %d %d\n",hardWareDecoderName,pCodec->id,pCodecCtx->codec_id);
+            }
+        }
+        else
+        {
+            fprintf(stderr,"Codec %s not found.\n",hardWareDecoderName);
+        }
+    }
+
+    return isSucceed;
+}
+
+///打开硬件解码器（intel）
+bool VideoDecoder::openHardDecoder_Qsv(const AVCodecID &codec_id)
+{
+    bool isSucceed = false;
+
+    fprintf(stderr,"open hardware decoder qsv... \n");
+
+    ///查找硬件解码器
+    char hardWareDecoderName[32] = {0};
+
+    if (AV_CODEC_ID_H264 == codec_id)
+    {
+        sprintf(hardWareDecoderName, "h264_qsv");
+    }
+    else if (AV_CODEC_ID_HEVC == codec_id)
+    {
+        sprintf(hardWareDecoderName, "hevc_qsv");
+    }
+    else if (AV_CODEC_ID_MPEG1VIDEO == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg1_qsv");
+    }
+    else if (AV_CODEC_ID_MPEG2VIDEO == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg2_qsv");
+    }
+    else if (AV_CODEC_ID_MPEG4 == codec_id)
+    {
+        sprintf(hardWareDecoderName, "mpeg4_qsv");
+    }
+
+    if (strlen(hardWareDecoderName) > 0)
+    {
+        pCodec = avcodec_find_decoder_by_name(hardWareDecoderName);
+
+        if (pCodec != NULL)
+        {
+            pCodecCtx = avcodec_alloc_context3(pCodec);
+
+            ///打开解码器
+            if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+            {
+                avcodec_close(pCodecCtx);
+                avcodec_free_context(&pCodecCtx);
+                pCodecCtx = nullptr;
+                isSucceed = false;
+
+                fprintf(stderr,"Could not open codec %s\n",hardWareDecoderName);
+            }
+            else
+            {
+                isSucceed = true;
+                fprintf(stderr,"open codec %s succeed!\n",hardWareDecoderName);
+            }
+        }
+        else
+        {
+            fprintf(stderr,"Codec %s not found.\n",hardWareDecoderName);
+        }
+    }
+
+    return isSucceed;
+
+}
+
+///打开软解码器
+bool VideoDecoder::openSoftDecoder(const AVCodecID &codec_id)
+{
+    bool isSucceed = false;
+
+    fprintf(stderr,"open software decoder... \n");
+
+    pCodec = avcodec_find_decoder(codec_id);
+
+    if (pCodec == NULL)
+    {
+        fprintf(stderr, "Codec not found.\n");
+        isSucceed = false;
+    }
+    else
+    {
+        pCodecCtx = avcodec_alloc_context3(pCodec);
+        pCodecCtx->thread_count = 8;
+
+        ///打开解码器
+        if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+        {
+            avcodec_close(pCodecCtx);
+            avcodec_free_context(&pCodecCtx);
+            pCodecCtx = nullptr;
+            isSucceed = false;
+
+            fprintf(stderr,"Could not open codec.\n");
+        }
+        else
+        {
+            isSucceed = true;
+        }
+    }
+
+    return isSucceed;
 }
 
 void VideoDecoder::closeDecoder()

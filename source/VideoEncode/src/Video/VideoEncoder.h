@@ -73,6 +73,13 @@ private:
 
     bool mIsStop;
 
+    AVDictionary *setEncoderParam(const AVCodecID &codec_id); //设置编码器参数
+
+    bool openVideoEncoder(const AVCodecID &codec_id); //打开视频编码器
+    bool openHardEncoder_Cuvid(const AVCodecID &codec_id); //打开硬件编码器（英伟达）
+    bool openHardEncoder_Qsv(const AVCodecID &codec_id);   //打开硬件编码器（intel）
+    bool openSoftEncoder(const AVCodecID &codec_id);//打开软编码器
+
     bool openEncoder(); //打开编码器
     bool closeEncoder(); //关闭编码器
 

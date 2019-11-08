@@ -8,6 +8,9 @@ Qt5.6.2(vs2013/mingw) + ffmpeg4.1
 2.已经编译好的库为centos6.5(64位)(gcc 版本 4.4.7)下编译的，如需32位的库请自行编译。 
 
 
+关于代码的解释 请参考：  
+http://blog.yundiantech.com/?log=blog&id=39  
+
 
 学习音视频技术欢迎访问 http://blog.yundiantech.com  
 音视频技术交流讨论欢迎加 QQ群 121376426  

@@ -75,7 +75,7 @@ T_NALU *NALUParsing::getNextFrame()
         int lenth = mBufferSize - pos_2; //剩余没有处理的数据长度
         if (lenth <= 4)
         {
-            return NULL;
+            return nullptr;
         }
 
         ///查找起始码(0x00000001)
@@ -129,10 +129,10 @@ T_NALU *NALUParsing::getNextFrame()
         nalu->nalu.h265Nalu.h265NaluHeader = *nalu_header;
         memcpy(nalu->nalu.h265Nalu.buf, Buf, naluSize);  //! contains the first byte followed by the EBSP
 
-        {
-            char *bufTmp = (char*)(Buf);
-            fprintf(stderr, "%s %02x%02x%02x%02x%02x%02x %d %d\n", __FUNCTION__, bufTmp[0], bufTmp[1], bufTmp[2], bufTmp[3], bufTmp[4], bufTmp[5], nalu->nalu.h265Nalu.h265NaluHeader.nal_unit_type, nalu_header->nal_unit_type);
-        }
+//        {
+//            char *bufTmp = (char*)(Buf);
+//            fprintf(stderr, "%s %02x%02x%02x%02x%02x%02x %d %d\n", __FUNCTION__, bufTmp[0], bufTmp[1], bufTmp[2], bufTmp[3], bufTmp[4], bufTmp[5], nalu->nalu.h265Nalu.h265NaluHeader.nal_unit_type, nalu_header->nal_unit_type);
+//        }
     }
 
     /// 将这一帧数据去掉

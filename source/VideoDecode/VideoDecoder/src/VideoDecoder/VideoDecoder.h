@@ -14,6 +14,7 @@ extern "C"
     #include <libavformat/avformat.h>
     #include <libavformat/avformat.h>
     #include <libswscale/swscale.h>
+    #include <libavutil/imgutils.h>
 }
 
 typedef unsigned char uchar;

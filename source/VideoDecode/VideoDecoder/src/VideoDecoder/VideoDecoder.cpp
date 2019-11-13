@@ -8,26 +8,41 @@
 
 VideoDecoder::VideoDecoder()
 {
-    pCodec = NULL;
-    pCodecCtx = NULL;
-    img_convert_ctx = NULL;
-    pFrame = NULL;
+    pCodec = nullptr;
+    pCodecCtx = nullptr;
+    img_convert_ctx = nullptr;
+    pFrame = nullptr;
 
-    pFrameYUV = NULL;
-    bufferYUV = NULL;
+    pFrameYUV = nullptr;
+    bufferYUV = nullptr;
 }
 
 void VideoDecoder::initWidth(int width, int height)
 {
     fprintf(stderr, "%s pCodecCtx->pix_fmt=%d %d %d \n", __FUNCTION__, pCodecCtx->pix_fmt, width, height);
 
+#if 0
+
     int numBytes = avpicture_get_size(AV_PIX_FMT_YUV420P, width,height);
     bufferYUV = (uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
     avpicture_fill((AVPicture *)pFrameYUV, bufferYUV, AV_PIX_FMT_YUV420P,width, height);
 
+#else
+
+    int yuvSize = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, pCodecCtx->width, pCodecCtx->height, 1);  //按1字节进行内存对齐,得到的内存大小最接近实际大小
+//    int yuvSize = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, pCodecCtx->width, pCodecCtx->height, 0);  //按0字节进行内存对齐，得到的内存大小是0
+//    int yuvSize = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, pCodecCtx->width, pCodecCtx->height, 4);   //按4字节进行内存对齐，得到的内存大小稍微大一些
+
+    unsigned int numBytes = static_cast<unsigned int>(yuvSize);
+    bufferYUV = static_cast<uint8_t *>(av_malloc(numBytes * sizeof(uint8_t)));
+    av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize, bufferYUV, AV_PIX_FMT_YUV420P, pCodecCtx->width, pCodecCtx->height, 1);
+
+#endif
+
+    ///用于将解码后的数据统一转换成YUV420P,因为硬件解码后的数据会是NV12的
     img_convert_ctx = sws_getContext(width, height, pCodecCtx->pix_fmt,
                                      width, height, AV_PIX_FMT_YUV420P,
-                                     SWS_BICUBIC, NULL,NULL,NULL);
+                                     SWS_BICUBIC, nullptr, nullptr, nullptr);
 
 }
 
@@ -77,7 +92,7 @@ bool VideoDecoder::openDecoder(AVCodecID id)
         pFrame = av_frame_alloc();
         pFrameYUV = av_frame_alloc();
 
-        if(pFrameYUV == NULL || pFrame == NULL)
+        if(pFrameYUV == nullptr || pFrame == nullptr)
         {
             isSucceed = false;
         }
@@ -97,14 +112,14 @@ bool VideoDecoder::openVideoDecoder(const AVCodecID &codec_id)
 //    bool mIsSupportHardDecoder = true;
 //    if (mIsSupportHardDecoder)
     {
-        ///尝试打开cuvid解码器
+        ///尝试打开英伟达的硬解
         isHardWareDecoderOpened = openHardDecoder_Cuvid(codec_id);
 
         ///cuvid打开失败了 继续尝试 qsv
         if (!isHardWareDecoderOpened)
         {
-            ///打开intel的硬解有问题，暂时还没搞明白，先不用。
-//            isHardWareDecoderOpened = openHardDecoder_Qsv(codec_id);
+            ///打开intel的硬解
+            isHardWareDecoderOpened = openHardDecoder_Qsv(codec_id);
         }
     }
 
@@ -117,14 +132,6 @@ bool VideoDecoder::openVideoDecoder(const AVCodecID &codec_id)
     {
         isSucceed = true;
     }
-
-//    if (isSucceed)
-//    {
-//        if (pCodecCtx->pix_fmt == AV_PIX_FMT_NONE)
-//        {
-//            isSucceed = false;
-//        }
-//    }
 
     return isSucceed;
 }
@@ -164,12 +171,13 @@ bool VideoDecoder::openHardDecoder_Cuvid(const AVCodecID &codec_id)
     {
         pCodec = avcodec_find_decoder_by_name(hardWareDecoderName);
 
-        if (pCodec != NULL)
+        if (pCodec != nullptr)
         {
             pCodecCtx = avcodec_alloc_context3(pCodec);
+            pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
 
             ///打开解码器
-            if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+            if (avcodec_open2(pCodecCtx, pCodec, nullptr) < 0)
             {
                 avcodec_close(pCodecCtx);
                 avcodec_free_context(&pCodecCtx);
@@ -224,16 +232,21 @@ bool VideoDecoder::openHardDecoder_Qsv(const AVCodecID &codec_id)
         sprintf(hardWareDecoderName, "mpeg4_qsv");
     }
 
+    /// 在使用 hevc_qsv 编码器的时候
+    /// 可能会出现 Error initializing an internal MFX session 错误，目前没有找到具体原因。
+    /// 在把 Media SDK 下的libmfxhw32.dll 文件拷贝到执行目录下之后这个问题就消失看
+
     if (strlen(hardWareDecoderName) > 0)
     {
         pCodec = avcodec_find_decoder_by_name(hardWareDecoderName);
 
-        if (pCodec != NULL)
+        if (pCodec != nullptr)
         {
             pCodecCtx = avcodec_alloc_context3(pCodec);
+            pCodecCtx->pix_fmt = AV_PIX_FMT_NV12;
 
             ///打开解码器
-            if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+            if (avcodec_open2(pCodecCtx, pCodec, nullptr) < 0)
             {
                 avcodec_close(pCodecCtx);
                 avcodec_free_context(&pCodecCtx);
@@ -245,7 +258,7 @@ bool VideoDecoder::openHardDecoder_Qsv(const AVCodecID &codec_id)
             else
             {
                 isSucceed = true;
-                fprintf(stderr,"open codec %s succeed!\n",hardWareDecoderName);
+                fprintf(stderr,"open codec %s succeed! %d %d\n",hardWareDecoderName,pCodec->id,pCodecCtx->codec_id);
             }
         }
         else
@@ -267,7 +280,7 @@ bool VideoDecoder::openSoftDecoder(const AVCodecID &codec_id)
 
     pCodec = avcodec_find_decoder(codec_id);
 
-    if (pCodec == NULL)
+    if (pCodec == nullptr)
     {
         fprintf(stderr, "Codec not found.\n");
         isSucceed = false;
@@ -276,9 +289,10 @@ bool VideoDecoder::openSoftDecoder(const AVCodecID &codec_id)
     {
         pCodecCtx = avcodec_alloc_context3(pCodec);
         pCodecCtx->thread_count = 8;
+        pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
 
         ///打开解码器
-        if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+        if (avcodec_open2(pCodecCtx, pCodec, nullptr) < 0)
         {
             avcodec_close(pCodecCtx);
             avcodec_free_context(&pCodecCtx);
@@ -290,6 +304,7 @@ bool VideoDecoder::openSoftDecoder(const AVCodecID &codec_id)
         else
         {
             isSucceed = true;
+            fprintf(stderr,"open software decoder succeed!\n");
         }
     }
 
@@ -303,18 +318,18 @@ void VideoDecoder::closeDecoder()
     av_free(pFrame);
     av_free(pFrameYUV);
 
-    if (bufferYUV != NULL)
+    if (bufferYUV != nullptr)
     {
         av_free(bufferYUV);
     }
 
-    pCodec = NULL;
-    pCodecCtx = NULL;
-    img_convert_ctx = NULL;
-    pFrame = NULL;
+    pCodec = nullptr;
+    pCodecCtx = nullptr;
+    img_convert_ctx = nullptr;
+    pFrame = nullptr;
 
-    pFrameYUV = NULL;
-    bufferYUV = NULL;
+    pFrameYUV = nullptr;
+    bufferYUV = nullptr;
 }
 
 bool VideoDecoder::decode(uint8_t *inputbuf, int frame_size, uint8_t *&outBuf, int &outWidth, int &outHeight)
@@ -331,15 +346,25 @@ bool VideoDecoder::decode(uint8_t *inputbuf, int frame_size, uint8_t *&outBuf, i
        return 0;
     }
 
-    while (0 == avcodec_receive_frame(pCodecCtx, pFrame))
+//    while (0 == avcodec_receive_frame(pCodecCtx, pFrame))
+    while(1)
     {
+        int ret = avcodec_receive_frame(pCodecCtx, pFrame);
+        if (ret != 0)
+        {
+//            char buffer[1024] = {0};
+//            av_strerror(ret, buffer, 1024);
+//            fprintf(stderr, "avcodec_receive_frame = %d %s\n", ret, buffer);
+            break;
+        }
+
         //前面初始化解码器的时候 并没有设置视频的宽高信息，
         //因为h264的每一帧数据都带有编码的信息，当然也包括这些宽高信息了，因此解码完之后，便可以知道视频的宽高是多少
         //这就是为什么 初始化编码器的时候 需要初始化高度，而初始化解码器却不需要。
         //解码器可以直接从需要解码的数据中获得宽高信息，这样也才会符合道理。
         //所以一开始没有为bufferYUV分配空间 因为没办法知道 视频宽高
         //一旦解码了一帧之后 就可以知道宽高了  这时候就可以分配了
-        if (bufferYUV == NULL)
+        if (bufferYUV == nullptr)
         {
             initWidth(pCodecCtx->width, pCodecCtx->height);
         }

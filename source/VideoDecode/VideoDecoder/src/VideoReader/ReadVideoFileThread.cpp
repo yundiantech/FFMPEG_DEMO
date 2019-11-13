@@ -67,7 +67,7 @@ void ReadVideoFileThread::run(AVCodecID id)
 
     char *fileName = mFileName;
     FILE *fp = fopen(fileName, "rb");
-    if (fp == NULL)
+    if (fp == nullptr)
     {
         fprintf(stderr, "H264 file not exist! \n");
         return;
@@ -85,7 +85,7 @@ void ReadVideoFileThread::run(AVCodecID id)
         {
             //从前面读到的数据中获取一个nalu
             T_NALU* nalu = mNaluParsing->getNextFrame();
-            if (nalu == NULL) break;
+            if (nalu == nullptr) break;
 
             uint8_t *bufferYUV = nullptr;
             int width;

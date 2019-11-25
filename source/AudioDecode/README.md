@@ -1,5 +1,8 @@
 # 从零开始学习音视频编程技术（42） AAC数据解析  
-ffmpeg4.1解码AAC，并使用SDL/RtAuido播放，同时显示音频波形图的例子
+ffmpeg4.1解码AAC，并使用SDL/RtAuido播放，同时显示音频波形图的例子  
+https://github.com/yundiantech/FFMPEG_DEMO/tree/master/source/AudioDecode  
+
+![Image text](https://raw.githubusercontent.com/yundiantech/FFMPEG_DEMO/master/source/AudioDecode/screenshot/mainwindow.png)
 
 这是Qt的工程，建议使用Qt Creator 打开
 

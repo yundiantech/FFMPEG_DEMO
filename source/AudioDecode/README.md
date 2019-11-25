@@ -15,6 +15,6 @@ Qt5.6.2(vs2013/mingw) + ffmpeg4.1
 http://blog.yundiantech.com/?log=blog&id=42  
 
 
-# 学习音视频技术欢迎访问 http://blog.yundiantech.com  
-# 音视频技术交流讨论欢迎加 QQ群 121376426  
+学习音视频技术欢迎访问 http://blog.yundiantech.com  
+音视频技术交流讨论欢迎加 QQ群 121376426  
 

@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     std::list<AudioDevice> deviceList = mReadAudioFileThread->getAudiDeviceList();
 
-    for (const AudioDevice device : deviceList)
+    for (const AudioDevice & device : deviceList)
     {
         ui->comboBox_audioDevice->addItem(QString::fromStdString(device.deviceName));
     }

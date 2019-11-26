@@ -4,7 +4,7 @@ ffmpeg4.1解码h264和h265，并使用Qt的OpenGL显示播放的例子
 这是Qt的工程，建议使用Qt Creator 打开
 
 Qt5.6.2(vs2013/mingw) + ffmpeg4.1  
-1.程序可以在windows/linux下直接编译使用。
+1.程序可以在windows/linux下直接编译使用。  
 2.windows下的库为官网直接下载的。  
 3.linux下已经编译好的库为centos6.5(64位)(gcc 版本 4.4.7)下编译的，如需32位的库请自行编译。 
 

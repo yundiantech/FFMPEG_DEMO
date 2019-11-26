@@ -112,18 +112,20 @@ DEFINES += NDEBUG WIN32 _CONSOLE __WINDOWS_ASIO__ __WINDOWS_DS__ __WINDOWS_WASAP
 
 }
 
-
+DEFINES += NDEBUG _CONSOLE __LINUX_ALSA__
 unix{
     contains(QT_ARCH, i386) {
         message("32-bit, 请自行编译32位库!")
     } else {
         message("64-bit")
         INCLUDEPATH += $$PWD/lib/linux/ffmpeg/include \
-                       $$PWD/lib/linux/sdl2/include \
+                       $$PWD/lib/linux/SDL2/include/SDL2 \
+                       $$PWD/lib/linux/alsa/include \
                        $$PWD/src
 
-        LIBS += -L$$PWD/lib/linux/ffmpeg/lib  -lavformat  -lavcodec -lavdevice -lavfilter -lavutil -lswresample -lswscale
-
+        LIBS += -L$$PWD/lib/linux/ffmpeg/lib  -lavformat  -lavcodec -lavdevice -lavfilter -lavutil -lswresample -lswscale -lpostproc
+        LIBS += -L$$PWD/lib/linux/SDL2/lib -lSDL2
+        LIBS += -L$$PWD/lib/linux/alsa/lib -lasound
         LIBS += -lpthread -ldl
     }
 
@@ -133,5 +135,6 @@ unix{
 #解压库文件
 #QMAKE_PRE_LINK += "cd $$PWD/lib/linux && tar xvzf ffmpeg.tar.gz "
 system("cd $$PWD/lib/linux && tar xvzf ffmpeg.tar.gz")
-
+system("cd $$PWD/lib/linux && tar xvzf SDL2.tar.gz")
+system("cd $$PWD/lib/linux && tar xvzf alsa.tar.gz")
 }

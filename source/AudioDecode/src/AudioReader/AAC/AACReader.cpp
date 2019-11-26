@@ -129,9 +129,8 @@ AACFramePtr AACReader::getNextFrame()
     /// 把后一帧数据覆盖上来
     int pos_2 = pos + buffersize;
     int leftSize = mBufferSize - pos_2;
-    memcpy(mAACBuffer, mAACBuffer + pos_2, leftSize);
+    memmove(mAACBuffer, mAACBuffer + pos_2, leftSize);
     mBufferSize = leftSize;
 
     return framePtr;
 }
-

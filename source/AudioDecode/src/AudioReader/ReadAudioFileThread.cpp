@@ -173,8 +173,8 @@ void ReadAudioFileThread::run()
                 std::list<float> righttChannelDbValues;
 
                 ///记录当前帧的所有采样点db值总和
-                u_int64 leftChannelTotal = 0;
-                u_int64 rightChannelTotal = 0;
+                uint64_t leftChannelTotal = 0;
+                uint64_t rightChannelTotal = 0;
 
                 /// 计算分贝 音频数据与大小
                 /// 首先我们分别累加每个采样点的数值，除以采样个数，得到声音平均能量值。

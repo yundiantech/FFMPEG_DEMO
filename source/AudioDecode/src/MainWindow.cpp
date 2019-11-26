@@ -153,32 +153,35 @@ void MainWindow::onUpdatePlayingValue(const float &leftChannel,
         mRightChannelDbValueList.removeFirst();
     }
 
+    auto showDbValues = [=](QChartView  *chartView, const QList<std::list<float>> &channelDbValueList)
+    {
+        QList<QPointF> valueList;
+
+        int i=0;
+        for (const std::list<float> &channelDbValues : channelDbValueList)
+        {
+            for(const float &value : channelDbValues)
+            {
+                valueList.append(QPointF(i, value));
+                i++;
+            }
+        }
+
+        FunctionTransfer::runInMainThread([=]()
+        {
+            chartView->chart()->axisX()->setRange(0, i);
+            ((QLineSeries*)chartView->chart()->series().first())->replace(valueList);
+        });
+
+    };
+
+    showDbValues(mCurrentChartView_Left,  mLeftChannelDbValueList);
+    showDbValues(mCurrentChartView_Right, mRightChannelDbValueList);
+
     FunctionTransfer::runInMainThread([=]()
     {
         ui->progressBar_left->setValue(leftChannel*100);
         ui->progressBar_right->setValue(rightChannel*100);
-
-        auto showDbValues = [=](QChartView  *chartView, const QList<std::list<float>> &channelDbValueList)
-        {
-            QList<QPointF> valueList;
-
-            int i=0;
-            for (const std::list<float> channelDbValues : channelDbValueList)
-            {
-                for(const float value : channelDbValues)
-                {
-                    valueList.append(QPointF(i, value));
-                    i++;
-                }
-            }
-
-            chartView->chart()->axisX()->setRange(0, i);
-
-            ((QLineSeries*)chartView->chart()->series().first())->replace(valueList);
-        };
-
-        showDbValues(mCurrentChartView_Left,  mLeftChannelDbValueList);
-        showDbValues(mCurrentChartView_Right, mRightChannelDbValueList);
 
         ///设置进度
         {

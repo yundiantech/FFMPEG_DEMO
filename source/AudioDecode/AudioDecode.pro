@@ -44,97 +44,19 @@ contains(QT_ARCH, i386) {
     DESTDIR = $${PWD}/bin/bin64
 }
 
+#包含音频解码的代码
+include(AudioDecoder/AudioDecoder.pri)
+
 SOURCES += \
-        src/AppConfig.cpp \
-        src/AudioDecoder/AudioDecoder.cpp \
-        src/AudioFrame/AACFrame.cpp \
-        src/AudioFrame/PCMFrame.cpp \
-        src/AudioPlayer/AudioPlayer.cpp \
-        src/AudioPlayer/AudioPlayer_RtAudio.cpp \
-        src/AudioPlayer/AudioPlayer_SDL.cpp \
-        src/AudioReader/AAC/AACReader.cpp \
-        src/AudioReader/ReadAudioFileThread.cpp \
-        src/Base/FunctionTransfer.cpp \
-        src/EventHandle/AudioPlayerEventHandle.cpp \
-        src/Mutex/Cond.cpp \
-        src/Mutex/Mutex.cpp \
         src/main.cpp \
+        src/AppConfig.cpp \
+        src/Base/FunctionTransfer.cpp \
         src/MainWindow.cpp
 
 HEADERS += \
         src/AppConfig.h \
-        src/AudioDecoder/AudioDecoder.h \
-        src/AudioFrame/AACFrame.h \
-        src/AudioFrame/PCMFrame.h \
-        src/AudioPlayer/AudioPlayer.h \
-        src/AudioPlayer/AudioPlayer_RtAudio.h \
-        src/AudioPlayer/AudioPlayer_SDL.h \
-        src/AudioReader/AAC/AACReader.h \
-        src/AudioReader/ReadAudioFileThread.h \
         src/Base/FunctionTransfer.h \
-        src/EventHandle/AudioPlayerEventHandle.h \
-        src/MainWindow.h \
-        src/Mutex/Cond.h \
-        src/Mutex/Mutex.h
+        src/MainWindow.h
 
 FORMS += \
         src/MainWindow.ui
-
-include($$PWD/lib/RtAudio/RtAudio.pri)
-
-win32{
-
-QMAKE_CFLAGS_DEBUG += -MT
-QMAKE_CXXFLAGS_DEBUG += -MT
-
-QMAKE_CFLAGS_RELEASE += -MT
-QMAKE_CXXFLAGS_RELEASE += -MT
-
-DEFINES += NDEBUG WIN32 _CONSOLE __WINDOWS_ASIO__ __WINDOWS_DS__ __WINDOWS_WASAPI__
-
-    contains(QT_ARCH, i386) {
-        message("32-bit")
-        INCLUDEPATH += $$PWD/lib/win32/ffmpeg/include \
-                       $$PWD/lib/win32/SDL2/include \
-                       $$PWD/src
-
-        LIBS += -L$$PWD/lib/win32/ffmpeg/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-        LIBS += -L$$PWD/lib/win32/SDL2/lib -lSDL2
-    } else {
-        message("64-bit")
-        INCLUDEPATH += $$PWD/lib/win64/ffmpeg/include \
-                       $$PWD/lib/win64/SDL2/include \
-                       $$PWD/src
-
-        LIBS += -L$$PWD/lib/win64/ffmpeg/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-        LIBS += -L$$PWD/lib/win64/SDL2/lib -lSDL2
-    }
-
-}
-
-DEFINES += NDEBUG _CONSOLE __LINUX_ALSA__
-unix{
-    contains(QT_ARCH, i386) {
-        message("32-bit, 请自行编译32位库!")
-    } else {
-        message("64-bit")
-        INCLUDEPATH += $$PWD/lib/linux/ffmpeg/include \
-                       $$PWD/lib/linux/SDL2/include/SDL2 \
-                       $$PWD/lib/linux/alsa/include \
-                       $$PWD/src
-
-        LIBS += -L$$PWD/lib/linux/ffmpeg/lib  -lavformat  -lavcodec -lavdevice -lavfilter -lavutil -lswresample -lswscale -lpostproc
-        LIBS += -L$$PWD/lib/linux/SDL2/lib -lSDL2
-        LIBS += -L$$PWD/lib/linux/alsa/lib -lasound
-        LIBS += -lpthread -ldl
-    }
-
-#QMAKE_POST_LINK 表示编译后执行内容
-#QMAKE_PRE_LINK 表示编译前执行内容
-
-#解压库文件
-#QMAKE_PRE_LINK += "cd $$PWD/lib/linux && tar xvzf ffmpeg.tar.gz "
-system("cd $$PWD/lib/linux && tar xvzf ffmpeg.tar.gz")
-system("cd $$PWD/lib/linux && tar xvzf SDL2.tar.gz")
-system("cd $$PWD/lib/linux && tar xvzf alsa.tar.gz")
-}

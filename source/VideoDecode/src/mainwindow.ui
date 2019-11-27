@@ -83,7 +83,7 @@
        <item>
         <widget class="QLineEdit" name="lineEdit">
          <property name="text">
-          <string>../data/test.h265</string>
+          <string>../data/test.h264</string>
          </property>
         </widget>
        </item>
@@ -118,7 +118,7 @@
      <x>0</x>
      <y>0</y>
      <width>452</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

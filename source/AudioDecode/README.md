@@ -13,7 +13,7 @@ Qt5.6.2(vs2013/mingw) + ffmpeg4.1
 
 
 关于代码的解释 请参考：  
-http://blog.yundiantech.com/?log=blog&id=42  
+http://blog.yundiantech.com/?log=blog&id=43  
 
 
 学习音视频技术欢迎访问 http://blog.yundiantech.com  

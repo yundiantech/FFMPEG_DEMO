@@ -138,7 +138,7 @@ T_NALU *NALUParsing::getNextFrame()
     /// 将这一帧数据去掉
     /// 把后一帧数据覆盖上来
     int leftSize = mBufferSize - pos_2;
-    memcpy(mH264Buffer, mH264Buffer + pos_2, leftSize);
+    memmove(mH264Buffer, mH264Buffer + pos_2, leftSize);
     mBufferSize = leftSize;
 
     return nalu;

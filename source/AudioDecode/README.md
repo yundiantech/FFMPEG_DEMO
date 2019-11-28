@@ -1,4 +1,4 @@
-# 从零开始学习音视频编程技术（42） AAC数据解析  
+# 从零开始学习音视频编程技术（43） AAC播放器  
 ffmpeg4.1解码AAC，并使用SDL/RtAuido播放，同时显示音频波形图的例子  
 https://github.com/yundiantech/FFMPEG_DEMO/tree/master/source/AudioDecode  
 

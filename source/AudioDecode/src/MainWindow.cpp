@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+﻿#include "MainWindow.h"
 #include "ui_MainWindow.h"
 
 #include <QDebug>
@@ -62,8 +62,8 @@ MainWindow::MainWindow(QWidget *parent) :
         return chartView;
     };
 
-    mChartView_Left  = createView("left channel", true);
-    mChartView_Right = createView("right channel", true);
+    mChartView_Left  = createView(QStringLiteral("左声道"), true);
+    mChartView_Right = createView(QStringLiteral("右声道"), true);
 
     mCurrentChartView_Left  = createView("left channel(one frame)", false);
     mCurrentChartView_Right = createView("right channel(2 seconds)", false);

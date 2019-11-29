@@ -2,8 +2,9 @@
 #define MOUDLECONFIG_H
 
 #include <stdio.h>
-#include <string>
+#include <string.h>
 #include <stdint.h>
+#include <string>
 
 #if defined(WIN32)
 

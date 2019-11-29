@@ -35,12 +35,6 @@ include($$PWD/lib/RtAudio/RtAudio.pri)
 
 win32{
 
-QMAKE_CFLAGS_DEBUG += -MT
-QMAKE_CXXFLAGS_DEBUG += -MT
-
-QMAKE_CFLAGS_RELEASE += -MT
-QMAKE_CXXFLAGS_RELEASE += -MT
-
     DEFINES += NDEBUG WIN32 _CONSOLE __WINDOWS_ASIO__ __WINDOWS_DS__ __WINDOWS_WASAPI__
 
     contains(QT_ARCH, i386) {
@@ -61,6 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -MT
         LIBS += -L$$PWD/lib/win64/SDL2/lib -lSDL2
     }
 
+    LIBS += -lmfplat -lmfuuid -lksuser -lwinmm -lwmcodecdspuuid
 }
 
 unix{

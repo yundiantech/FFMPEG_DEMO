@@ -1,4 +1,4 @@
-#ifndef APPCONFIG_H
+﻿#ifndef APPCONFIG_H
 #define APPCONFIG_H
 
 #include <QFile>

@@ -1,4 +1,4 @@
-#include "AppConfig.h"
+﻿#include "AppConfig.h"
 
 #include <QProcess>
 #include <QDesktopWidget>

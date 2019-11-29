@@ -19,12 +19,6 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <unistd.h>
-
-void Sleep(long mSeconds)
-{
-    usleep(mSeconds * 1000);
-}
-
 #endif
 
 #define PCMTYPE short

@@ -1,0 +1,52 @@
+
+下面简单介绍一下遍历ffmpeg中的解码器信息的方法（这些解码器以一个链表的形式存储）：
+1.注册所有编解码器：av_register_all();
+
+2.声明一个AVCodec类型的指针，比如说AVCodec* p;
+
+3.调用av_codec_next()函数，即可获得指向链表下一个解码器的指针，循环往复可以获得所有解码器的信息。注意，如果想要获得指向第一个解码器的指针，则需要将该函数的参数设置为NULL。
+
+/**
+* If c is NULL, returns the first registered codec,
+* if c is non-NULL, returns the next registered codec after c,
+* or NULL if c is the last one.
+*/
+
+int getSupportCodecs(void)
+{
+    char *info = (char *)malloc(40000);
+    memset(info, 0, 40000);
+
+    av_register_all();
+
+    AVCodec *c_temp = av_codec_next(NULL);
+
+    while (c_temp != NULL)
+    {
+        if (c_temp->decode != NULL)
+        {
+            strcat(info, "[Decode]");
+        }
+        else
+        {
+            strcat(info, "[Encode]");
+        }
+        switch (c_temp->type)
+        {
+        case AVMEDIA_TYPE_VIDEO:
+            strcat(info, "[Video]");
+            break;
+        case AVMEDIA_TYPE_AUDIO:
+            strcat(info, "[Audeo]");
+            break;
+        default:
+            strcat(info, "[Other]");
+            break;
+        }
+        sprintf(info, "%s %10s\n", info, c_temp->name);
+        c_temp = c_temp->next;
+    }
+    fprintf(stderr, "%s %s\n", __FUNCTION__, info);
+    free(info);
+    return 0;
+}

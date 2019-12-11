@@ -1,0 +1,3 @@
+ffmpeg -i E:/a.mp3 -ac 2 -ar 44100 -ab 32 E:/a.aac
+
+ffmpeg -i E:/a.mp3 -ac 2 E:/a.aac

@@ -6,3 +6,4 @@
 /source/AudioDecode/AudioDecode.pro.user
 /source/build-AudioDecode-Desktop_Qt_5_13_0_MSVC2017_32bit-Release
 /source/OtherDemo/mydemo/build-TestAvFilter-Desktop_Qt_5_13_0_MSVC2017_32bit-Debug
+source/OtherDemo/mydemo/FilterDemo/TestAvFilter.pro.user

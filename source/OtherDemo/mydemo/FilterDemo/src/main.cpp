@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+
 #include "crop.h"
 
 int main(int argc, char* argv[])

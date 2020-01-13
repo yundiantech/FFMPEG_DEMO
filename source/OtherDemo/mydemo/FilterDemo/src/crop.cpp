@@ -6,9 +6,11 @@
 
 #include "crop.h"
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
+//#ifdef _WIN32
+//    #ifndef snprintf
+//    #define snprintf _snprintf
+//    #endif
+//#endif
 
 #ifdef __cplusplus
 extern "C"

@@ -74,11 +74,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalLayout_current_left->addWidget(mCurrentChartView_Left);
     ui->horizontalLayout_current_right->addWidget(mCurrentChartView_Right);
 
+#if 1
+    mReadAACFileThread = new ReadAACFileThread();
+    mReadAACFileThread->setVideoPlayerCallBack(this);
+    mReadAACFileThread->startRead((char*)"../data/test.aac");
+    std::list<AudioDevice> deviceList = mReadAACFileThread->getAudiDeviceList();
+#else
     mReadAudioFileThread = new ReadAudioFileThread();
     mReadAudioFileThread->setVideoPlayerCallBack(this);
-    mReadAudioFileThread->startRead((char*)"../data/test.aac");
-
+    mReadAudioFileThread->startRead((char*)"../data/test.mp3");
     std::list<AudioDevice> deviceList = mReadAudioFileThread->getAudiDeviceList();
+#endif
 
     for (const AudioDevice & device : deviceList)
     {

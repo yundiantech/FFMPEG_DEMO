@@ -1,11 +1,11 @@
-/**
+﻿/**
  * 叶海辉
  * QQ群121376426
  * http://blog.yundiantech.com/
  */
 
-#ifndef AUDIODECODER_H
-#define AUDIODECODER_H
+#ifndef AACDECODER_H
+#define AACDECODER_H
 
 #include "AudioFrame/PCMFrame.h"
 
@@ -22,10 +22,10 @@ typedef unsigned char uchar;
 
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 
-class AudioDecoder
+class AACDecoder
 {
 public:
-    AudioDecoder();
+    AACDecoder();
 
     bool openDecoder();
     void closeDecoder();
@@ -56,4 +56,4 @@ private:
 
 };
 
-#endif // AUDIODECORDER_H
+#endif // AACDECODER_H

@@ -1,12 +1,12 @@
-/**
+﻿/**
  * 叶海辉
  * QQ群121376426
  * http://blog.yundiantech.com/
  */
 
-#include "AudioDecoder.h"
+#include "AACDecoder.h"
 
-AudioDecoder::AudioDecoder()
+AACDecoder::AACDecoder()
 {
     aCodec = nullptr;
     aCodecCtx = nullptr;
@@ -16,7 +16,7 @@ AudioDecoder::AudioDecoder()
     swrCtx = nullptr;
 }
 
-bool AudioDecoder::openDecoder()
+bool AACDecoder::openDecoder()
 {
     ///打开音频解码器
     //find the decoder
@@ -44,7 +44,7 @@ bool AudioDecoder::openDecoder()
     return true;
 }
 
-void AudioDecoder::closeDecoder()
+void AACDecoder::closeDecoder()
 {
     avcodec_close(aCodecCtx);
     av_free(aCodecCtx);
@@ -57,7 +57,7 @@ void AudioDecoder::closeDecoder()
 
 }
 
-bool AudioDecoder::initResample()
+bool AACDecoder::initResample()
 {
     //重采样设置选项-----------------------------------------------------------start
     aFrame_ReSample = av_frame_alloc();
@@ -121,7 +121,7 @@ bool AudioDecoder::initResample()
     return true;
 }
 //FILE *fp = fopen("out.pcm", "wb");
-PCMFramePtr AudioDecoder::decode(uint8_t *inputbuf, int frame_size)
+PCMFramePtr AACDecoder::decode(uint8_t *inputbuf, int frame_size)
 {
     PCMFramePtr framePtr = nullptr;
 

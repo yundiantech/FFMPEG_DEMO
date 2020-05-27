@@ -9,6 +9,7 @@
 #include <QtCharts/QValueAxis>
 #include <QLabel>
 
+#include "AudioReader/ReadAACFileThread.h"
 #include "AudioReader/ReadAudioFileThread.h"
 
 QT_CHARTS_USE_NAMESPACE
@@ -29,6 +30,7 @@ private:
     Ui::MainWindow *ui;
 
     ReadAudioFileThread *mReadAudioFileThread;
+    ReadAACFileThread *mReadAACFileThread;
 
     QLabel *mShowProgressLabel; //显示进度用的
 

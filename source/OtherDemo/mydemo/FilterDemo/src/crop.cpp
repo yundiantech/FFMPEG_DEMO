@@ -65,7 +65,7 @@ int doCrop()
 
     avfilter_register_all();
 
-    char args[512];
+    char args[512] = {0};
     const AVFilter *buffersrc  = avfilter_get_by_name("buffer");
 //    const AVFilter *buffersink = avfilter_get_by_name("ffbuffersink");新版的ffmpeg这里要改成buffersink
     const AVFilter *buffersink = avfilter_get_by_name("buffersink");
@@ -77,7 +77,7 @@ int doCrop()
     filter_graph = avfilter_graph_alloc();
 
     /* buffer video source: the decoded frames from the decoder will be inserted here. */
-    snprintf(args, sizeof(args),
+    sprintf(args,
         "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
         in_width,in_height,AV_PIX_FMT_YUV420P,
         1, 25,1,1);

@@ -21,12 +21,12 @@ contains(QT_ARCH, i386) {
 include($$PWD/../../lib/lib.pri)
 
 SOURCES += src/main.cpp \
-           src/audioMix.cpp \
-           src/crop.cpp
+           src/crop.cpp \
+           src/overlay.cpp
 
 HEADERS += \
-    src/audioMix.h \
-    src/crop.h
+    src/crop.h \
+    src/overlay.h
 
 
 

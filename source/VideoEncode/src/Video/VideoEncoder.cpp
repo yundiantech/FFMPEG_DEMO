@@ -8,7 +8,7 @@
 #include "VideoEncoder.h"
 
 //是否启用 ROI (region of interest) encoding 感兴趣区域视频编码技术
-#define TEST_ROI_ENCODING
+//#define TEST_ROI_ENCODING
 
 //#define ENCODE_H265
 

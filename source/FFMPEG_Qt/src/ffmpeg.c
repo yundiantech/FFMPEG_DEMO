@@ -704,6 +704,8 @@ static void close_all_output_streams(OutputStream *ost, OSTFinished this_stream,
 
 static void write_packet(OutputFile *of, AVPacket *pkt, OutputStream *ost, int unqueue)
 {
+fprintf(stderr, "[=] size=%d pts=%I64d %I64d index=%d \n", pkt->size, pkt->pts, pkt->dts, pkt->stream_index);
+
     AVFormatContext *s = of->ctx;
     AVStream *st = ost->st;
     int ret;
@@ -827,6 +829,8 @@ static void write_packet(OutputFile *of, AVPacket *pkt, OutputStream *ost, int u
                 pkt->size
               );
     }
+static int frameNums=0;
+fprintf(stderr, "[- %d] size=%d pts=%I64d %I64d index=%d \n", frameNums++, pkt->size, pkt->pts, pkt->dts, pkt->stream_index);
 
     ret = av_interleaved_write_frame(s, pkt);
     if (ret < 0) {
@@ -4441,6 +4445,9 @@ static int process_input(int file_index)
         }
     }
 
+//    static int frameNums=0;
+//fprintf(stderr, "[%d] size=%d pts=%I64d %I64d index=%d  \n", frameNums++, pkt.size, pkt.pts, pkt.dts, pkt.stream_index);
+
     if (pkt.dts != AV_NOPTS_VALUE)
         pkt.dts += av_rescale_q(ifile->ts_offset, AV_TIME_BASE_Q, ist->st->time_base);
     if (pkt.pts != AV_NOPTS_VALUE)
@@ -4529,6 +4536,7 @@ static int process_input(int file_index)
                av_ts2str(input_files[ist->file_index]->ts_offset),
                av_ts2timestr(input_files[ist->file_index]->ts_offset, &AV_TIME_BASE_Q));
     }
+//fprintf(stderr, "[%d] size=%d pts=%I64d %I64d index=%d \n", frameNums, pkt.size, pkt.pts, pkt.dts, pkt.stream_index);
 
     sub2video_heartbeat(ist, pkt.pts);
 

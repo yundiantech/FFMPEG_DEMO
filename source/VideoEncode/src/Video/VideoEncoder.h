@@ -17,6 +17,8 @@ extern "C"
     #include "libavformat/avformat.h"
     #include "libswscale/swscale.h"
     #include "libavdevice/avdevice.h"
+
+    #include <libavutil/frame.h>
 }
 
 struct FrameDataNode

@@ -1,9 +1,10 @@
-#ifndef APPCONFIG_H
+﻿#ifndef APPCONFIG_H
 #define APPCONFIG_H
 
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <stdint.h>
 
 #if defined(WIN32)
 

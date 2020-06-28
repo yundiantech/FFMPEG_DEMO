@@ -8,7 +8,7 @@
 #include "VideoEncoder.h"
 
 //是否启用 ROI (region of interest) encoding 感兴趣区域视频编码技术
-//#define TEST_ROI_ENCODING
+#define TEST_ROI_ENCODING
 
 //#define ENCODE_H265
 
@@ -116,7 +116,7 @@ void VideoEncoder::run()
                 // 在AVFrame的清理函数中会自动处理。
                 AVFrameSideData *sd = av_frame_new_side_data(picture,
                              AV_FRAME_DATA_REGIONS_OF_INTEREST,
-                             1*sizeof(AVRegionOfInterest));
+                             10*sizeof(AVRegionOfInterest));
 
                 // 获取刚申请到的内存地址
                 AVRegionOfInterest* roi = (AVRegionOfInterest*)sd->data;
@@ -403,18 +403,21 @@ bool VideoEncoder::openVideoEncoder(const AVCodecID &codec_id)
     bool isSucceed = false;
     bool isHardWareEncoderOpened = false;
 
-//    bool mIsSupportHardEncoder = true;
-//    if (mIsSupportHardEncoder)
-//    {
-//        ///尝试打开cuvid编码器器
-//        isHardWareEncoderOpened = openHardEncoder_Cuvid(codec_id);
+#ifdef TEST_ROI_ENCODING
+#else
+    bool mIsSupportHardEncoder = true;
+    if (mIsSupportHardEncoder)
+    {
+        ///尝试打开cuvid编码器器
+        isHardWareEncoderOpened = openHardEncoder_Cuvid(codec_id);
 
-//        ///cuvid打开失败了 继续尝试 qsv
-//        if (!isHardWareEncoderOpened)
-//        {
-//            isHardWareEncoderOpened = openHardEncoder_Qsv(codec_id);
-//        }
-//    }
+        ///cuvid打开失败了 继续尝试 qsv
+        if (!isHardWareEncoderOpened)
+        {
+            isHardWareEncoderOpened = openHardEncoder_Qsv(codec_id);
+        }
+    }
+#endif
 
     //尝试打开硬件解码器失败了 改用软解码
     if (!isHardWareEncoderOpened)

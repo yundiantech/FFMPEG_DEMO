@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 叶海辉
  * QQ群121376426
  * http://blog.yundiantech.com/
@@ -338,7 +338,7 @@ bool VideoDecoder::decode(uint8_t *inputbuf, int frame_size, uint8_t *&outBuf, i
     av_init_packet(&pkt);
     pkt.data = inputbuf;
     pkt.size = frame_size;
-
+//fprintf(stderr, "%s %d %d \n", __FUNCTION__, pCodecCtx, frame_size);
     if (avcodec_send_packet(pCodecCtx, &pkt) != 0)
     {
        fprintf(stderr, "input AVPacket to decoder failed!\n");

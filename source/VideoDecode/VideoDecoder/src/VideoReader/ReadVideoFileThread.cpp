@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 叶海辉
  * QQ群121376426
  * http://blog.yundiantech.com/
@@ -31,7 +31,12 @@ ReadVideoFileThread::ReadVideoFileThread()
 {
     mVideoCallBack = nullptr;
 
+#ifdef USE_FFMPEG_VIDEO_PARSE
+    mFFmpegVideoParsing = new FFmpegVideoParsing();
+#else
     mNaluParsing  = new NALUParsing();
+#endif
+
     mVideoDecoder = new VideoDecoder();
 }
 
@@ -45,25 +50,18 @@ void ReadVideoFileThread::startRead(char* filePath, AVCodecID id)
     strcpy(mFileName, filePath);
 
     //启动新的线程实现读取视频文件
-    std::thread([&](ReadVideoFileThread *pointer, AVCodecID id)
+    std::thread([=]
     {
-        pointer->run(id);
+        for (int i=0;i<10000;i++) //测试稳定性
 
-    }, this, id).detach();
+        this->run(id);
+
+    }).detach();
 }
 
 void ReadVideoFileThread::run(AVCodecID id)
 {
-    mVideoDecoder->openDecoder(id);
-
-    if (id == AV_CODEC_ID_H264)
-    {
-        mNaluParsing->setVideoType(T_NALU_H264);
-    }
-    else
-    {
-        mNaluParsing->setVideoType(T_NALU_H265);
-    }
+    bool openDecorderSucceed = mVideoDecoder->openDecoder(id);
 
     char *fileName = mFileName;
     FILE *fp = fopen(fileName, "rb");
@@ -75,6 +73,55 @@ void ReadVideoFileThread::run(AVCodecID id)
 
     int frameNum = 0; //当前播放的帧序号
 
+#ifdef USE_FFMPEG_VIDEO_PARSE
+
+    auto getVideoFrameFunc = [&](uint8_t *buffer, const int &size, void *param)
+    {
+        uint8_t *bufferYUV = nullptr;
+        int width  = 0;
+        int height = 0;
+fprintf(stderr, "%s %d %d %d\n", __FUNCTION__, buffer, size, openDecorderSucceed);
+        mVideoDecoder->decode(buffer, size, bufferYUV, width, height);
+
+        if (bufferYUV != nullptr)
+        {
+            int frameRate = mVideoDecoder->getFrameRate(); //获取帧率
+
+            /// h264裸数据不包含时间戳信息  因此只能根据帧率做同步
+            /// 需要成功解码一帧后 才能获取到帧率
+            /// 为0说明还没获取到 则直接显示
+            if (frameRate != 0)
+            {
+                Sleep(1000 / frameRate);
+            }
+
+            //然后传给主线程显示
+            doDisplayVideo(bufferYUV, width, height, ++frameNum);
+        }
+    };
+
+    mFFmpegVideoParsing->start(getVideoFrameFunc, nullptr);
+
+    while(!feof(fp))
+    {
+        char buf[10240] = {0};
+        int size = fread(buf, 1, 1024, fp);//从h264文件读1024个字节 (模拟从网络收到h264流)
+        int nCount = mFFmpegVideoParsing->inputVideoBuffer((const uint8_t*)buf, size);
+    }
+
+    fclose(fp);
+
+    mFFmpegVideoParsing->stop();
+
+#else
+    if (id == AV_CODEC_ID_H264)
+    {
+        mNaluParsing->setVideoType(T_NALU_H264);
+    }
+    else
+    {
+        mNaluParsing->setVideoType(T_NALU_H265);
+    }
     while(!feof(fp))
     {
         char buf[10240];
@@ -119,6 +166,7 @@ void ReadVideoFileThread::run(AVCodecID id)
             NALUParsing::FreeNALU(nalu);
         }
     }
+#endif
 
     mVideoDecoder->closeDecoder();
 }

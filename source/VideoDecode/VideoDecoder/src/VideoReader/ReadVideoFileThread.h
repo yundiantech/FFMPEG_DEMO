@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 叶海辉
  * QQ群121376426
  * http://blog.yundiantech.com/
@@ -9,8 +9,11 @@
 
 #include "VideoDecoder/VideoDecoder.h"
 #include "VideoReader/NALUParsing.h"
+#include "VideoReader/FFmpegVideoParsing.h"
 
 #include "Video/VideoEventHandle.h"
+
+#define USE_FFMPEG_VIDEO_PARSE
 
 class ReadVideoFileThread
 {
@@ -30,7 +33,12 @@ protected:
     void run(AVCodecID id);
 
 private:
+
+#ifdef USE_FFMPEG_VIDEO_PARSE
+    FFmpegVideoParsing *mFFmpegVideoParsing;
+#else
     NALUParsing *mNaluParsing;
+#endif
     VideoDecoder *mVideoDecoder;
 
     char mFileName[256];

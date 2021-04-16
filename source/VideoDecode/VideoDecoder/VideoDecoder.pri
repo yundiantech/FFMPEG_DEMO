@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/src/Mutex/Cond.cpp \
     $$PWD/src/Mutex/Mutex.cpp \
     $$PWD/src/VideoDecoder/VideoDecoder.cpp \
+    $$PWD/src/VideoReader/FFmpegVideoParsing.cpp \
     $$PWD/src/VideoReader/NALUParsing.cpp \
     $$PWD/src/VideoReader/ReadVideoFileThread.cpp
 
@@ -16,6 +17,7 @@ HEADERS += \
     $$PWD/src/Video/VideoEventHandle.h \
     $$PWD/src/Video/VideoFrame.h \
     $$PWD/src/VideoDecoder/VideoDecoder.h \
+    $$PWD/src/VideoReader/FFmpegVideoParsing.h \
     $$PWD/src/VideoReader/h264.h \
     $$PWD/src/VideoReader/h265.h \
     $$PWD/src/VideoReader/NALUParsing.h \

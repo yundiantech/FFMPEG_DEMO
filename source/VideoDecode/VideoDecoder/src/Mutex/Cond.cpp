@@ -1,10 +1,13 @@
-#include "Cond.h"
+ï»¿#include "Cond.h"
 
 Cond::Cond()
 {
 #if defined(WIN32) && !defined(MINGW)
     InitializeCriticalSection(&m_mutex);
+
+    ///vistaä»¥ä¸Šçš„ç³»ç»Ÿæ‰èƒ½æ‰§è¡Œè¿™ä¸ªå‡½æ•°ï¼šInitializeConditionVariable
     InitializeConditionVariable(&m_cond);
+
 #else
     pthread_mutex_init(&m_mutex, NULL);
     pthread_cond_init(&m_cond, NULL);
@@ -23,7 +26,7 @@ Cond::~Cond()
 
 }
 
-//¼ÓËø
+//åŠ é”
 int Cond::Lock()
 {
 #if defined(WIN32) && !defined(MINGW)
@@ -35,7 +38,7 @@ int Cond::Lock()
 
 }
 
-//½âËø
+//è§£é”
 int Cond::Unlock()
 {
 #if defined(WIN32) && !defined(MINGW)
@@ -46,10 +49,14 @@ int Cond::Unlock()
 #endif
 }
 
-int Cond::Wait()
+int Cond::Wait(int timeOut)
 {
 #if defined(WIN32) && !defined(MINGW)
-    DWORD ret = SleepConditionVariableCS((PCONDITION_VARIABLE)&m_cond, &m_mutex, INFINITE);
+    if (timeOut < 0)
+    {
+        timeOut = INFINITE;
+    }
+    DWORD ret = SleepConditionVariableCS((PCONDITION_VARIABLE)&m_cond, &m_mutex, timeOut);
 #else
     int ret = pthread_cond_wait(&m_cond, &m_mutex);
 #endif
@@ -58,7 +65,7 @@ int Cond::Wait()
 
 }
 
-//¹Ì¶¨Ê±¼äµÈ´ı
+//å›ºå®šæ—¶é—´ç­‰å¾…
 int Cond::TimedWait(int second)
 {
 #if defined(WIN32) && !defined(MINGW)
@@ -66,7 +73,7 @@ int Cond::TimedWait(int second)
     return 0;
 #else
     struct timespec abstime;
-    //»ñÈ¡´Óµ±Ç°Ê±¼ä£¬²¢¼ÓÉÏµÈ´ıÊ±¼ä£¬ ÉèÖÃ½ø³ÌµÄ³¬Ê±Ë¯ÃßÊ±¼ä
+    //è·å–ä»å½“å‰æ—¶é—´ï¼Œå¹¶åŠ ä¸Šç­‰å¾…æ—¶é—´ï¼Œ è®¾ç½®è¿›ç¨‹çš„è¶…æ—¶ç¡çœ æ—¶é—´
     clock_gettime(CLOCK_REALTIME, &abstime);
     abstime.tv_sec += second;
     return pthread_cond_timedwait(&m_cond, &m_mutex, &abstime);
@@ -85,7 +92,7 @@ int Cond::Signal()
     return ret;
 }
 
-//»½ĞÑËùÓĞË¯ÃßÏß³Ì
+//å”¤é†’æ‰€æœ‰ç¡çœ çº¿ç¨‹
 int Cond::Broadcast()
 {
 #if defined(WIN32) && !defined(MINGW)

@@ -52,8 +52,6 @@ void ReadVideoFileThread::startRead(char* filePath, AVCodecID id)
     //启动新的线程实现读取视频文件
     std::thread([=]
     {
-        for (int i=0;i<10000;i++) //测试稳定性
-
         this->run(id);
 
     }).detach();

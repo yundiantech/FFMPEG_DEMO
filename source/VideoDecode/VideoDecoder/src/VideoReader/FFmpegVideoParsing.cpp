@@ -199,24 +199,23 @@ do
 
     fprintf(stderr, "... %d \n", ret);
 
-//    while (1)
-//    {
-//        AVPacket packet;
-//        int ret = av_read_frame(pFormatCtx, &packet);
+    while (1)
+    {
+        AVPacket packet;
+        int ret = av_read_frame(pFormatCtx, &packet);
 
-//        if (ret != 0 && mIsStop)
-//        {
-//            break;
-//        }
+        if (ret != 0 && mIsStop)
+        {
+            break;
+        }
 
-//        if (mCallBackFunc != nullptr)
-//        {
-//            mCallBackFunc((uint8_t*)packet.data, packet.size, mCallBackFuncParam);
-//        }
+        if (mCallBackFunc != nullptr)
+        {
+            mCallBackFunc((uint8_t*)packet.data, packet.size, mCallBackFuncParam);
+        }
 
-//        av_packet_unref(&packet);
-//    }
-
+        av_packet_unref(&packet);
+    }
 
 
 }while(0);

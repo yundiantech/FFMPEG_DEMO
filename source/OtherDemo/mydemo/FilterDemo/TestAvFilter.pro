@@ -12,13 +12,13 @@ OBJECTS_DIR = obj/Obj
 #DESTDIR=$$PWD/bin/
 contains(QT_ARCH, i386) {
     message("32-bit")
-    DESTDIR = $${PWD}/../../bin/bin32
+    DESTDIR = $${PWD}/../../../../bin/win32
 } else {
     message("64-bit")
-    DESTDIR = $${PWD}/../../bin/bin64
+    DESTDIR = $${PWD}/../../../../bin/win64
 }
 
-include($$PWD/../../lib/lib.pri)
+include($$PWD/../../../../lib/lib.pri)
 
 SOURCES += src/main.cpp \
            src/crop.cpp \

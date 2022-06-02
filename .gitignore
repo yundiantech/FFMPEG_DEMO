@@ -13,3 +13,4 @@ source/build-VideoDecode-Desktop_Qt_5_13_2_MSVC2017_32bit_654258-Release
 /build-FFmpegDemo-Desktop_Qt_5_13_2_MSVC2017_32bit_654258-Debug
 /build-FFmpegDemo-Desktop_Qt_5_13_2_MSVC2017_32bit_654258-Release
 source/FFmpegDemo.pro.user
+bin/

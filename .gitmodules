@@ -1,0 +1,12 @@
+[submodule "lib/ffmpeg"]
+	path = lib/ffmpeg
+	url = https://gitee.com/huihui765/ffmpeg-dev.git
+	branch = V4.3.1
+[submodule "lib/RtAudio"]
+	path = lib/RtAudio
+	url = https://gitee.com/devlib/RtAudio-dev.git
+	branch = master
+[submodule "lib/SDL2"]
+	path = lib/SDL2
+	url = https://gitee.com/devlib/SDL2-dev.git
+	branch = master
